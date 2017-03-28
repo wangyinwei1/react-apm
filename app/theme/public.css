@@ -1,0 +1,115 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+main, menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	vertical-align: baseline;
+    font-weight: normal;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, main, menu, nav, section {
+	display: block;
+}
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+	color: #fff;
+    box-sizing: border-box;
+    min-width: 1200px;
+    overflow-x: auto;
+	line-height: 1;
+    font-family: 'Microsoft YaHei';
+
+    background:radial-gradient(50% 50%,#2a61a1,#1e4879);
+    background:-webkit-radial-gradient(50% 50%,#2a61a1,#1e4879);
+    background:-moz-radial-gradient(50% 50%,#2a61a1,#1e4879);
+    background:-ms-radial-gradient(50% 50%,#2063aa,#1d4371);
+    background:#1E4F86\0;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+.pull-left {
+    float:left;
+}
+.pull-right {
+    float:right;
+}
+.clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden}
+.clearfix{*+height:1%;}
+
+/* Don't kill focus outline for keyboard users: http://24ways.org/2009/dont-lose-your-focus */
+a{
+    color: #2db7f5;
+    background: transparent;
+    text-decoration: none;
+    outline: none;
+    cursor: pointer;
+    transition: color .1s linear 0s, background-color .1s linear 0s!important;
+}
+a:active, a:hover, a:visited {
+    outline: 0;
+    text-decoration: none;
+}
+a:active {
+    color: #2baee9;
+}
+a:focus {
+    outline: thin dotted;
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: 2px;
+    text-decoration: none;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+#nav {
+    min-height: 570px;
+}
+#nav ul>li:nth-last-child(2) {
+    position: absolute;
+    width: 100%;
+    bottom: 105px;
+}
+#nav ul>li:nth-last-child(1) {
+    position: absolute;
+    width: 100%;
+    bottom: 50px;
+}
+#left-panel .flex {
+	bottom: 188px!important;  
+}
+
+#background {
+    position: fixed;
+    z-index: -10;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
