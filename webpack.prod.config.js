@@ -7,7 +7,7 @@ var uglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 var HtmlWebpackPlugin = require("html-webpack-plugin");
 // 单独样式文件
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
-var http = path.resolve(__dirname, 'app/services/http.js');
+var http = path.resolve(__dirname, 'app/fetch/http.js');
 
 module.exports = {
   entry: [
@@ -92,6 +92,7 @@ module.exports = {
       'APM_moment': 'moment',
       'IM': 'immutable',
       '$': 'jquery',
+      '_': 'lodash',
       'http': http
     })
   ]

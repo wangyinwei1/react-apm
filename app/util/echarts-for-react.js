@@ -19,7 +19,7 @@ const ReactEcharts = React.createClass({
     },
     // first add
     componentDidMount() {
-        let echartObj = this.renderEchartDom()._zr;
+        let echartObj = this.renderEchartDom();
         let onEvents = this.props.onEvents || [];
          // var zRender = echartObj.getZrender();
 

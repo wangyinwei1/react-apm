@@ -1,16 +1,17 @@
-import { ALL_APPLICATIONS, INCREMENT_COUNTER, DECREMENT_COUNTER } from '../../actions/business/center_actions.jsx';
+import { APPLICATIONS, INCREMENT_COUNTER, DECREMENT_COUNTER, PERFORMANCES } from '../../actions/business/action_type_name.jsx';
 
 export default function conter(state = {
-		data:[],
+		performances:[],
 		xAxisData:[]}, action){
 
 	switch (action.type){
-		case ALL_APPLICATIONS:
-            console.log(action.payload);
+		case APPLICATIONS:
 			return Object.assign({}, state, action.payload)
         case INCREMENT_COUNTER:
 			return Object.assign({}, state, action.payload)
 		case DECREMENT_COUNTER:
+		    return Object.assign({}, state, action.payload)
+		case PERFORMANCES:
 		    return Object.assign({}, state, action.payload)
 		default:
 			return state

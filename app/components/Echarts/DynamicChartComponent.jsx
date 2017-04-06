@@ -1,6 +1,4 @@
 import ReactEcharts from '../../util/echarts-for-react';
-// import { incrementAsync } from '../../states/actions/counter.jsx';
-import { connect } from 'react-redux';
 import React, { Component, PropTypes } from 'react';
 import { findDOMNode } from 'react-dom';
 class DynamicChartComponent extends Component {
@@ -13,37 +11,40 @@ class DynamicChartComponent extends Component {
         super(props)
         this.onZrMousemove = this.onZrMousemove.bind(this)//改成这样
     }
-    fetchNewDate() {
+    fetchNewDate(echartsData, xAxisData) {
+
         let axisData = (new Date()).toLocaleTimeString().replace(/^\D*/, '');
         let option = this.state.option;
-        let data0 = option.series[0].data;
-        let data1 = option.series[1].data;
-        data0.shift();
-        data0.push(Math.round(Math.random() * 1000));
-        data1.shift();
-        data1.push((Math.random() * 10 + 5).toFixed(1) - 0);
+        let shadowDate = [];
+        const max = 50;
+        for (var i = 0; i <= 60; i++) {
+            shadowDate.push(max);
+        }
 
-        option.xAxis[0].data.shift();
-        option.xAxis[0].data.push(axisData);
-        option.xAxis[1].data.shift();
-        option.xAxis[1].data.push(this.count++);
-        this.setState({ option: option });
+        // console.log(option.xAxis[0].data);
+        option.series[0].data = shadowDate;
+        option.series[1].data = echartsData;
+
+        // this.setState({ option: option });
     }
     componentDidMount() {
+        const { EchartsData, left, xAxisData } = this.props;
+
+        this.fetchNewDate(EchartsData, xAxisData);
         // console.log(this.props.params.id);
-        const { dispatch } = this.props;
-        dispatch(incrementAsync())
         // if (this.timeTicket) {
         //     clearInterval(this.timeTicket);
         // }
         // this.timeTicket = setInterval(this.fetchNewDate, 1000);
     }
     componentWillReceiveProps(nextProps) {
-        let option = this.state.option;
-        option.series[0].data = nextProps.data;
-        option.xAxis[0].splitArea.show = true;
-        option.xAxis[0].splitLine.show = true;
-        this.setState({ option: option });
+        this.fetchNewDate(nextProps.EchartsData, nextProps.xAxisData);
+        // let option = this.state.option;
+        // option.series[0].data = nextProps.data;
+        // option.xAxis[0].splitArea.show = true;
+        // option.xAxis[0].splitLine.show = true;
+        // console.log(nextProps);
+        // this.setState({ option: option });
     }
     componentWillUnmount() {
 
@@ -53,50 +54,136 @@ class DynamicChartComponent extends Component {
     }
     getOption() {
         const overviewOrCenterSwitch = true;
+
+        //         option = {
+        //     color: ['#3398DB'],
+        //     tooltip : {
+        //         trigger: 'axis',
+        //         axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+        //             type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+        //         }
+        //     },
+        //     grid: {
+        //         left: '3%',
+        //         right: '4%',
+        //         bottom: '3%',
+        //         containLabel: true
+        //     },
+        //     xAxis : [
+        //         {
+        //             type : 'category',
+        //             data : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        //             axisTick: {
+        //                 alignWithLabel: true
+        //             }
+        //         }
+        //     ],
+        //     yAxis : [
+        //         {
+        //             type : 'value'
+        //         }
+        //     ],
+        //     series : [
+        //         {
+        //             name:'直接访问',
+        //             type:'bar',
+        //             barWidth: '60%',
+        //             data:[10, 52, 200, 334, 390, 330, 220]
+        //         }
+        //     ]
+        // };
         const option = {
             grid: {
                 x: 0,
                 y: 0,
                 x2: 0,
-                y2: 0,
-                borderWidth: 0
+                y2: 0
             },
             tooltip: {
                 trigger: 'axis',
-                formatter: "{b} &nbsp; " + (overviewOrCenterSwitch == "system" ? "吞吐量" : "交易量") + ": {c}",
+                formatter: "{c} &nbsp; " + (overviewOrCenterSwitch == "system" ? "吞吐量" : "交易量") + ": {b}",
                 showDelay: 0,
                 transitionDuration: 0,
                 position: function (pos) {
                     return [pos[0], 10];
                 }
             },
-      
-            
             xAxis: [
                 {
+                    type: 'category',
                     axisLine: {
-                        show: true
-                    },
-                    axisLabel: {
-                        show: true,
-                        //标签的间隔决定了分割线的间隔
-                        interval: 0,
-                        // textStyle: {
-                        //     align: "left"
-                        // }
-                    },
-                    axisTick: {
-                        show: true,
+                        show: false,
+                        lineStyle: {
+                            color: '#16375b',
+                            width: 1,
+                            type: 'solid',
+                            shadowColor: '#579dc9',
+                            shadowOffsetY: 5,
+                            opacity: 1
+                        },
+
 
                     },
-                   
+                    axisLabel: {
+                        show: false,
+                        //标签的间隔决定了分割线的间隔
+                        interval: 0,
+                        textStyle: {
+                            color: '#fff'
+                        },
+                        margin: 22,
+                        formatter: function (value) {
+                            if(value){
+                                if(value.substring(value.indexOf(":")+1)%5 == 0){
+                                    return value;
+                                }
+                               
+                            };
+                            
+                        }
+                    },
+                    splitLine: {
+                        show: true,
+                        interval: function (i, data) {
+                            if (i == 0) {
+                                return false;
+                            }
+                            return true;
+                        },
+                        lineStyle: {
+                            // 使用深浅的间隔色
+                            color: "#16375b",
+                            type: 'solid',
+                            width: 0
+                        }
+
+                    },
+                    axisTick: {
+                        show: false,
+                        alignWithLabel: true,
+                        inside: true,
+                        lineStyle: {
+                            color: '#16375b',
+                            width: 1,
+                            type: 'solid',
+                            shadowColor: '#579dc9',
+                            shadowOffsetY: 10,
+                            opacity: 1
+                        },
+                        formatter: function (value) {
+                            return false;
+                            
+                        }
+                    },
+
                     splitArea: {
                         show: false,
+
                         areaStyle: {
                             color: ['rgba(138,237,119,.2)']
                         }
                     },
-                    data: [234, 234, 234, 22, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                    data: []
                 }
             ],
             yAxis: [
@@ -110,20 +197,33 @@ class DynamicChartComponent extends Component {
                     },
                     splitLine: {
                         show: false
+                    },
+                    axisTick: {
+                        show: false
                     }
                 }
             ],
             series: [
+                { // For shadow
+                    type: 'bar',
+                    itemStyle: {
+                        normal: { color: 'rgba(0,0,0,.15)' }
+                    },
+                    barCategoryGap: 1,
+                    barGap: '-100%',
+                    animation: false
+                },
                 {
                     type: 'bar',
-                    data: ['-'],
+                    data: [],
                     name: overviewOrCenterSwitch == "system" ? "吞吐量" : "交易量",
-                    barCategoryGap: 2,
+                    barCategoryGap: 1,
                     itemStyle: {
                         normal: {
                             color: '#8aed77'
                         }
                     }
+
                 }
             ]
         };
@@ -131,13 +231,11 @@ class DynamicChartComponent extends Component {
         return option;
     }
     onZrMousemove(params, echart) {
-
+  
         const { data, left } = this.props;
-        let marginLeft = params.event.clientX - left,
-            chartsWidth = findDOMNode(this.refs.echarts_react).offsetWidth,
-            rangeBind = chartsWidth/data.length;
-            console.log(data.length);
-        console.log(rangeBind);
+        // let marginLeft = params.event.clientX - left,
+        //     chartsWidth = findDOMNode(this.refs.echarts_react).offsetWidth,
+        //     rangeBind = chartsWidth/data.length;
 
         this.context.router.push({
             pathname: 'business/33',
@@ -162,7 +260,7 @@ class DynamicChartComponent extends Component {
                 <div className='parent' ref='getWidth'>
                     <ReactEcharts ref='echarts_react'
                         option={this.state.option}
-                        style={{ height: 52 }}
+                        style={{ height: 50 }}
                         onEvents={onEvents} />
                 </div>
             </div>
@@ -174,10 +272,5 @@ DynamicChartComponent.contextTypes = {
     router: PropTypes.object.isRequired
 }
 
-function mapStateToProps(state) {
-    console.log(state);
-    return {...state.business }
-}
 
-
-export default connect(mapStateToProps)(DynamicChartComponent);
+export default DynamicChartComponent;

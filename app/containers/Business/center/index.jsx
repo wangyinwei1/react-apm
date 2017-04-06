@@ -7,30 +7,58 @@ import * as d3 from 'd3';
 import Perf from 'react-addons-perf';
 import { connect } from 'react-redux';
 import CSSModules from 'react-css-modules';
-import { requireApplications, incrementAsync } from '../../../states/actions/business/center_actions.jsx';
+import { incrementAsync } from '../../../states/actions/business/center_actions.jsx';
+import { requireApplications } from '../../../model/business/main.jsx';
 
 
-if (__DEV__) window.Perf = Perf;;
+//获取服务器时间差
+import '../../../util/server_time_difference.js';
+
+
+if (__DEV__) window.Perf = Perf;
 //时间轴外框组件
 @CSSModules(style)
 class TimeAxis extends Component {
 	state = {
 		width: 0
 	}
-	histogramClick(i){
-		 this.context.router.push({
+	histogramClick(i) {
+		this.context.router.push({
 			pathname: 'business/33',
 			query: {
 				id: i
 			},
 		})
 	}
+
+	componentDidMount() {
+
+
+	}
+	componentDidUpdate() {
+		const {xAxisData } = this.props;
+		let xAxisLineWidth = findDOMNode(this.refs.xAxisLine).getBoundingClientRect().width;
+		let len = xAxisData.length;
+		let interval = xAxisLineWidth / len;
+		$(findDOMNode(this.refs.xAxisLine)).find('div').each(function (i) {
+
+			$(this).css('left', i * interval + interval / 2 + 'px')
+		})
+
+
+		$(findDOMNode(this.refs.xAxisLabel)).find('span').each(function (i) {
+			let width = $(this).width();
+			$(this).css('left', i * interval + interval / 2 - width / 2 + 'px')
+		})
+	}
+
 	render() {
-		const { data,name,xAxisData } = this.props,
+		const { performances, name, xAxisData } = this.props,
 			ctrl = this;
+
 		let onEvents = {
-            'click': ctrl.histogramClick.bind(this)
-        };
+			'click': ctrl.histogramClick.bind(this)
+		};
 		return (
 			<div styleName='timeAxisItem' ref='wrap'>
 				<div className='clearfix'>
@@ -51,14 +79,22 @@ class TimeAxis extends Component {
 					</div>
 				</div>
 				<div styleName='histogramWrap'  >
-					<Histogram 
-						paddingLeft={42} 
-						height={52} 
-						xAxisData={xAxisData}
-						onEvents={onEvents}
-						data={data} />
-					{/*<DynamicChartComponent left={this.state.width} />*/}
+					<DynamicChartComponent
+						left={this.state.width}
+						EchartsData={performances} />
+
+					<div styleName="x_axis_line" ref="xAxisLine" >
+						{_.map(xAxisData, (data, i) => {
+							return <div key={i} styleName="x_axis_tick"></div>
+						})}
+					</div>
+					<div styleName="x_axis_label" ref="xAxisLabel" >
+						{_.map(xAxisData, (data, i) => {
+							return <span key={i} styleName="x_axis_text">{data}</span>
+						})}
+					</div>
 				</div>
+
 			</div>
 		)
 	}
@@ -73,27 +109,13 @@ class Center extends Component {
 	componentDidMount() {
 
 		const { dispatch } = this.props;
-		dispatch(requireApplications())
-	}
-	componentWillMount() {
-		const { dispatch } = this.props;
-		dispatch(incrementAsync())
-			
-	}
-
-	//每次接受新的props触发
-	componentWillReceiveProps(nextProps) {
-		// if (nextProps.selectedReddit !== this.props.selectedReddit) {
-		//   const { dispatch, selectedReddit } = nextProps
-		//   dispatch(fetchPostsIfNeeded(selectedReddit))
-		// }
+		dispatch(requireApplications());
 	}
 	render() {
-		const { data, applicaitons, xAxisData } = this.props;
+		const { performances, applicaitons, xAxisData } = this.props;
 		let items = [];
-	
 		for (let item of this.props.applicaitons || []) {
-			items.push(<TimeAxis key={item}   data={data} name={item.name} xAxisData={xAxisData} />);
+			items.push(<TimeAxis key={item.id} performances={performances} name={item.name} xAxisData={xAxisData} />);
 		};
 		return (
 			<div>
@@ -114,7 +136,7 @@ class Center extends Component {
 	}
 }
 
-TimeAxis.contextTypes  = {
+TimeAxis.contextTypes = {
 	router: PropTypes.object.isRequired
 }
 
@@ -124,6 +146,7 @@ Center.propType = {
 }
 
 function mapStateToProps(state) {
-  return {...state.center}
+
+	return {...state.center }
 }
 export default connect(mapStateToProps)(Center);

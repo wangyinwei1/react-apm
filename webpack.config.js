@@ -7,7 +7,7 @@ var HtmlWebpackPlugin = require("html-webpack-plugin");
 // 单独样式文件
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var node_modules = path.resolve(__dirname, 'node_modules');
-var http = path.resolve(__dirname, 'app/services/http.js');
+var http = path.resolve(__dirname, 'app/fetch/http.js');
 /**
  * 标识开发环境和生产环境
  * @type {webpack.DefinePlugin}
@@ -102,6 +102,7 @@ module.exports = {
     new webpack.ProvidePlugin({
       'APM_moment': 'moment',
       'IM': 'immutable',
+      '_': 'lodash',
       'http': http
     }),
   ]

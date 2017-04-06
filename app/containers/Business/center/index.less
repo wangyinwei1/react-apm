@@ -8,6 +8,7 @@
 	background: rgb(22, 129, 196);
 	line-height: 36px;
 	text-align: center;
+	border:0px;
 }
 .btn:hover{
 	background: #53b9f9;
@@ -62,9 +63,29 @@
 	padding-top: 60px;
 }
 .histogramWrap {
-	height:52px;
-	padding-top: 10px;
-	
-	// padding:10px 42px 0 42px;
+	padding:10px 42px 0 42px;
 }
 
+.x_axis_line {
+	width: 100%;
+	height:1px;
+	background-color: #579dc9;
+	margin-top:5px;
+	position:relative;
+}
+.x_axis_tick {
+	width:1px;
+	height:6px;
+	background-color: #579dc9;
+}
+.x_axis_label{
+	position:relative;
+	color: #579dc9;
+    line-height: 38px;
+    text-align: center;
+}
+.x_axis_text,.x_axis_tick {
+	position:absolute;
+	top:1px;
+	left:0;
+}

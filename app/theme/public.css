@@ -92,12 +92,12 @@ table {
     min-height: 570px;
 }
 #nav ul>li:nth-last-child(2) {
-    position: absolute;
+    position: absolute!important;
     width: 100%;
     bottom: 105px;
 }
 #nav ul>li:nth-last-child(1) {
-    position: absolute;
+    position: absolute!important;
     width: 100%;
     bottom: 50px;
 }

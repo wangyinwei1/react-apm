@@ -2,12 +2,13 @@ import 'babel-polyfill'
 import 'fetch-polyfill';
 import 'es6-promise';
 import 'isomorphic-fetch';
-import processResponse from './process-response'
+import processResponse from './process-response';
+
 /**
  * 配置回调函数
  */
 let CallbacksSetting = {
-  onRequestStart: () => {},
+  onRequestStart: () => { },
   onResponse: res => res,
   onResponseError: res => res
 }
@@ -48,27 +49,33 @@ function send(url, method, data) {
   }
 
   if (data) {
-    fetchParams.body = JSON.stringify(data)
+    let query = '';
+    _.map(Object.keys(data), function (value) {
+      query += (value + '=' + data[value] + '&');
+    });
+    query = query.substring(0, query.length - 1);
+    url = url + '?' + query;
   }
+
 
   return new Promise((resolve, reject) => {
     fetch(url, fetchParams)
-    .then(processResponse)
-    .then(res => {
-      CallbacksSetting.onResponse(res)
-      res = ProcesserSetting.processResponse(res)
-      return resolve(res)
-    })
-    .catch(res => {
-      CallbacksSetting.onResponseError(res)
-      return reject(res)
-    })
+      .then(processResponse)
+      .then(res => {
+        CallbacksSetting.onResponse(res)
+        res = ProcesserSetting.processResponse(res)
+        return resolve(res)
+      })
+      .catch(res => {
+        CallbacksSetting.onResponseError(res)
+        return reject(res)
+      })
   })
 }
 
 export default {
-  get(url,data) {
-    return send(url,'get',data)
+  get(url, data) {
+    return send(url, 'get', data)
   },
 
   post(url, data) {
