@@ -8,6 +8,7 @@ var HtmlWebpackPlugin = require("html-webpack-plugin");
 // 单独样式文件
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var http = path.resolve(__dirname, 'app/fetch/http.js');
+var values = require('postcss-modules-values');
 
 module.exports = {
   entry: [
@@ -60,6 +61,9 @@ module.exports = {
       }
     ]
   },
+  postcss: [
+    values
+  ],
   plugins: [
     new ExtractTextPlugin("main.[hash:8].css", {
       allChunks: true,

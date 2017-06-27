@@ -8,12 +8,12 @@ import { Business,Detail} from './containers';
 //路由配置
 function getRoutes() {
     const Routes = (
-        <Route path="/">
-            <IndexRedirect to="business" />
+        <Route name="home" breadcrumbName="业务中心" path="/">
+            <IndexRedirect to="business/center" />
             <Route path="business" >
-                <IndexRedirect to='center' />
-                <Route path="center" component={Business} />
-                <Route path=":id" component={Detail} >
+                <IndexRedirect  to='center' />
+                <Route  path="center" component={Business} />
+                    <Route name="home" breadcrumbName=":id" path=":id" component={Detail} >
                     {/* <Route path="gauge" component={Business.lianxi} /> */}
                 </Route>
             </Route>
@@ -22,12 +22,6 @@ function getRoutes() {
     );
     return Routes;
 }
-
-
-
-
-
-
 
 
 

@@ -1,23 +1,23 @@
 // api base url
-export const baseUrl = '/api'
+export const baseUrl = 'front/rest/apm/'
 
 // login url
 export const loginUrl = 'http://uyuntest.cn/tenant/#/login'
 
 // other urls
-const urls = {
-  user: '/tenant/api/v1/user/details/view',
-}
+// const urls = {
+//   user: '/tenant/api/v1/user/details/view',
+// }
 
-export default {
-  /**
-   * get url with name
-   */
-  get(scope, name) {
-    if (name) {
-      return urls[scope][name]
-    }
+// export default {
+//   /**
+//    * get url with name
+//    */
+//   get(scope, name) {
+//     if (name) {
+//       return urls[scope][name]
+//     }
 
-    return urls[scope]
-  }
-}
+//     return urls[scope]
+//   }
+// }

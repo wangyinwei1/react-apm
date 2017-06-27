@@ -1,9 +1,11 @@
 import { combineReducers } from 'redux'
 import { routerReducer } from 'react-router-redux'
-import center from './business/center.jsx'
+import { center, detail } from './business/main.jsx'
+
 //使用redux的combineReducers方法将所有reducer打包起来
 const rootReducer = combineReducers({
   center,
+  detail,
   routing: routerReducer
 })
 

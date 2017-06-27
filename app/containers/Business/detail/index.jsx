@@ -1,109 +1,110 @@
 import React, { Component, PropTypes } from 'react';
-import style from './index.less';
-import {  Dropdown } from '../../../components';
-import { decrementAsync, incrementAsync } from '../../../states/actions/business/center_actions.jsx';
-import {  Histogram } from '../../../components';
+import { Breadcrumb, Alert } from 'antd';
+
+import { Dropdown, Calendar } from '../../../components';
 import { findDOMNode } from 'react-dom';
-import Perf from 'react-addons-perf';
 import { connect } from 'react-redux';
 import CSSModules from 'react-css-modules';
+import { requireAppMunes, serviceTimeDifference } from '../../../model/business/main.jsx';
+import style from './index.less';
 
+
+
+import Perf from 'react-addons-perf';
 if (__DEV__) window.Perf = Perf;
-
 @CSSModules(style)
 class Detail extends Component {
-	constructor(props){
+	constructor(props) {
 		super(props)
-		this._swichData =  this._swichData.bind(this)//改成这样
-		this._appJump =  this._appJump.bind(this)
-		this.index = (props.location.query) ? props.location.query.id : null;
+		this._appJump = this._appJump.bind(this);
+		this._getCurrentValue = this._getCurrentValue.bind(this);
 	}
 	state = {
-		retrospectivePattern:false,
-		range:1
+		appId:'',
+		defaultValue: APM_moment(new Date(new Date()-(this.props.timeD_value)))
 	}
 
 	//初始化渲染后触发
 	componentDidMount() {
+		const { dispatch } = this.props;
+		dispatch(requireAppMunes());
+		dispatch(serviceTimeDifference());
+	}
+	
+	_appJump(item) {
 		
-		const { dispatch } = this.props;
-
-		dispatch(incrementAsync())
-
-	}
-	componentWillMount() {
-
-	}
-
-	//每次接受新的props触发
-	componentWillReceiveProps(nextProps) {
-		// if (nextProps.selectedReddit !== this.props.selectedReddit) {
-		//   const { dispatch, selectedReddit } = nextProps
-		//   dispatch(fetchPostsIfNeeded(selectedReddit))
-		// }
-	}
-	_swichData(e){
-		const { dispatch } = this.props;
-
-		dispatch(decrementAsync())
+		this.context.router.push({
+			pathname: 'business/' + item.id,
+			query: {
+				appId: item.id
+			}
+		})
 		this.setState({
-			retrospectivePattern:true,
-			range:0
+			appId: item.id
 		})
 	}
-	_appJump(){
-		this.context.router.push('business/22');
+	_getCurrentValue(value){
+
+		this.setState({
+			defaultValue: value['_d']
+		});
 	}
 	render() {
-		const data = [{
-					name:'网上银行',
-					href:'business'
-				},{
-					name:'微信支付',
-					href:'business'
-				}];
+		console.log(this.state.defaultValue.format('YYYY年MM月DD日'));
+		const { routes, location, applicaitonMunes } = this.props;
+		//当前菜单
+		let currentOptions = _.filter(applicaitonMunes, (item, i) => {
+			return item.id == location.query.appId
+		});
+		//其他菜单
+		let otherMunes = _.filter(applicaitonMunes, (item, i) => {
+			return item.id != location.query.appId
+		});
+		//减去服务器时间的当前时间
+		let defaultValue = APM_moment(new Date(new Date()-(this.props.timeD_value)));
+		
+		//当前应用名称
+		let currentValue = currentOptions[0] && currentOptions[0].name;
 		return (
-			<div className='clearfix'>
-				<div className='clearfix'>
-					<div className='pull-left' styleName='appMenu'>
-						<div className='pull-left'>
-							<Dropdown data={data} onClick={this._appJump}/>
-						</div>
-						<div className='pull-left'>
-							<p>{APM_moment().format('YYYY年MM月DD日')}</p>
-							<p>最近60分钟</p>
-						</div>
+			<div className=''>
+				<div className='clearfix '>
+					<div className="breadcrumn_wrapper pull-left">
+						<Breadcrumb
+							routes={routes}
+							params={{ id: currentValue }}
+							separator=">" />
 					</div>
-					<div styleName='timeAxis'>
-						<Histogram 
-							height={30} 
-							paddingLeft={6} 
-							range={this.state.range}
-							pattern={this.state.retrospectivePattern}
-							xAxisData={this.props.xAxisData}
-							data={this.props.data}
-							/>
+
+					<div styleName='app_select_container'>
+						<Dropdown
+							data={otherMunes}
+							changeMune={this._appJump}
+							currentValue={currentValue}
+							currentId={currentOptions[0] && currentOptions[0].id} />
 					</div>
 				</div>
-				<div>
-					<Dropdown data={data} onClick={this._appJump}/>
-					<button onClick={this._swichData}>点我</button>
+				<div styleName="detail_wrapper" className='clearfix'>
+					<div styleName='detail_title'>
+						{currentValue}
+					</div>
+					<div className='pull-left'>
+						<Calendar defaultValue={defaultValue} currentValueCallback={this._getCurrentValue} appId={this.state.appId} />
+					</div>
 				</div>
 			</div>
 		)
 	}
 }
-
-Detail.contextTypes  = {
+Detail.contextTypes = {
 	router: PropTypes.object.isRequired
 }
-
 Detail.propType = {
-
+	applicaitonMunes: PropTypes.array,
+	location: PropTypes.object
 }
 
 function mapStateToProps(state) {
-  return {...state.center}
+	return {...state.detail }
 }
 
 export default connect(mapStateToProps)(Detail);

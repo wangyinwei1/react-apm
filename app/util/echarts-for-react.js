@@ -21,14 +21,14 @@ const ReactEcharts = React.createClass({
     componentDidMount() {
         let echartObj = this.renderEchartDom();
         let onEvents = this.props.onEvents || [];
-         // var zRender = echartObj.getZrender();
+        // var zRender = echartObj.getZrender();
 
         for (let eventName in onEvents) {
             // ignore the event config which not satisfy
             if (typeof eventName === 'string' && typeof onEvents[eventName] === 'function') {
-               
+
                 // binding event
-                echartObj.on(eventName, function(param) {onEvents[eventName](param, echartObj,);});
+                echartObj.on(eventName, function (param) { onEvents[eventName](param, echartObj, ); });
             }
         }
         this.renderEchartDom()
@@ -36,7 +36,7 @@ const ReactEcharts = React.createClass({
         if (typeof this.props.onChartReady === 'function') this.props.onChartReady(echartObj);
 
         // on resize
-        elementResizeEvent(this.refs.echartsDom, function() {
+        elementResizeEvent(this.refs.echartsDom, function () {
             echartObj.resize();
         });
     },
@@ -55,7 +55,13 @@ const ReactEcharts = React.createClass({
         // set the echart option
         echartObj.setOption(this.props.option, this.props.notMerge || false, this.props.lazyUpdate || false);
         // set loading mask
-        if (this.props.showLoading) echartObj.showLoading();
+        if (this.props.showLoading) echartObj.showLoading('default', {
+            text: '加载中...',
+            color: 'rgba(255, 255, 255, 0.8)',
+            textColor: '#579dc9',
+            maskColor: 'rgba(0, 0, 0, 0.1)',
+            zlevel: 0
+        });
         else echartObj.hideLoading();
         return echartObj;
     },
@@ -64,7 +70,7 @@ const ReactEcharts = React.createClass({
         return echarts.getInstanceByDom(this.refs.echartsDom) || echarts.init(this.refs.echartsDom, this.props.theme);
     },
     render() {
-        let style = this.props.style || {height: '300px'};
+        let style = this.props.style || { height: '300px' };
         // for render
         return (
             <div ref='echartsDom'

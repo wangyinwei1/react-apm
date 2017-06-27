@@ -17,6 +17,8 @@ var definePlugin = new webpack.DefinePlugin({
   __PRERELEASE__: JSON.stringify(JSON.parse(process.env.BUILD_PRERELEASE || 'false'))
 });
 
+var values = require('postcss-modules-values');
+
 module.exports = {
   devServer: {
     historyApiFallback: true,
@@ -59,7 +61,7 @@ module.exports = {
           presets: ['es2015', 'stage-0', 'react'],
         }
       },
-      {
+     {
         test: /\.css/,
         loader: ExtractTextPlugin.extract("style-loader", "css-loader")
       },
@@ -85,6 +87,9 @@ module.exports = {
       }
     ]
   },
+  postcss: [
+    values
+  ],
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),

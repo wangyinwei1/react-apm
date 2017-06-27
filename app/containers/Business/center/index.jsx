@@ -1,20 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import style from './index.less';
-import { DynamicChartComponent, Histogram } from '../../../components';
-import { is } from 'immutable';
+import { DynamicChartComponent } from '../../../components';
 import { findDOMNode } from 'react-dom';
-import * as d3 from 'd3';
-import Perf from 'react-addons-perf';
 import { connect } from 'react-redux';
 import CSSModules from 'react-css-modules';
-import { incrementAsync } from '../../../states/actions/business/center_actions.jsx';
 import { requireApplications } from '../../../model/business/main.jsx';
-
-
 //获取服务器时间差
 import '../../../util/server_time_difference.js';
-
-
+import Perf from 'react-addons-perf';
 if (__DEV__) window.Perf = Perf;
 //时间轴外框组件
 @CSSModules(style)
@@ -22,66 +15,60 @@ class TimeAxis extends Component {
 	state = {
 		width: 0
 	}
-	histogramClick(i) {
-		this.context.router.push({
-			pathname: 'business/33',
-			query: {
-				id: i
-			},
-		})
-	}
-
-	componentDidMount() {
-
-
+	constructor(props) {
+		super(props)
+		this._clickJump = this._clickJump.bind(this);//改成这
 	}
 	componentDidUpdate() {
 		const {xAxisData } = this.props;
 		let xAxisLineWidth = findDOMNode(this.refs.xAxisLine).getBoundingClientRect().width;
 		let len = xAxisData.length;
 		let interval = xAxisLineWidth / len;
+		//tick定位
 		$(findDOMNode(this.refs.xAxisLine)).find('div').each(function (i) {
-
 			$(this).css('left', i * interval + interval / 2 + 'px')
 		})
-
-
+		//类目定位
 		$(findDOMNode(this.refs.xAxisLabel)).find('span').each(function (i) {
 			let width = $(this).width();
 			$(this).css('left', i * interval + interval / 2 - width / 2 + 'px')
 		})
 	}
-
+	_clickJump(params, echart) {
+		const { performances, appId} = this.props;
+		this.context.router.push({
+			pathname: 'business/' + appId,
+			query: {
+				dataIndex: params.dataIndex,
+				appId: appId
+			},
+		})
+	}
 	render() {
-		const { performances, name, xAxisData } = this.props,
-			ctrl = this;
-
-		let onEvents = {
-			'click': ctrl.histogramClick.bind(this)
-		};
+		const { performances, app, xAxisData } = this.props;
 		return (
-			<div styleName='timeAxisItem' ref='wrap'>
+			<div styleName='timeAxis_item' ref='wrap'>
 				<div className='clearfix'>
-					<h3 styleName='itemTitle'>{name}</h3>
-					<div styleName='btnGroup'>
-						<button styleName='btnIcon'>
+					<h3 styleName='item_title'>{app.name}</h3>
+					<div styleName='btn_group'>
+						<button styleName='btn_icon'>
 							<i styleName=''></i>
 						</button>
-						<button styleName='btnIcon'>
+						<button styleName='btn_icon'>
 							<i styleName=''></i>
 						</button>
-						<button styleName='btnIcon'>
+						<button styleName='btn_icon'>
 							<i styleName=''></i>
 						</button>
-						<button styleName='btnIcon'>
+						<button styleName='btn_icon'>
 							<i styleName=''></i>
 						</button>
 					</div>
 				</div>
-				<div styleName='histogramWrap'  >
+				<div styleName='histogram_wrappper'  >
 					<DynamicChartComponent
-						left={this.state.width}
-						EchartsData={performances} />
+						EchartsData={performances[app.id]}
+						clickJump={this._clickJump} />
 
 					<div styleName="x_axis_line" ref="xAxisLine" >
 						{_.map(xAxisData, (data, i) => {
@@ -107,16 +94,21 @@ class Center extends Component {
 	}
 	//初始化渲染后触发
 	componentDidMount() {
-
 		const { dispatch } = this.props;
+
+		if (this.timeTicket) {
+			clearInterval(this.timeTicket);
+		}
+		//一分钟刷新下数据
+		this.timeTicket = setInterval(function () {
+			dispatch(requireApplications());
+		}, 60000);
+		//第一次调用接口
 		dispatch(requireApplications());
+
 	}
 	render() {
 		const { performances, applicaitons, xAxisData } = this.props;
-		let items = [];
-		for (let item of this.props.applicaitons || []) {
-			items.push(<TimeAxis key={item.id} performances={performances} name={item.name} xAxisData={xAxisData} />);
-		};
 		return (
 			<div>
 				<div styleName='titleBox'>
@@ -127,26 +119,32 @@ class Center extends Component {
 					</h3>
 					<button styleName='add-button'>添加</button>
 				</div>
-				<div styleName='timeAxisWrap'>
-					{items}
+				<div styleName='timeAxis_wrappper'>
+					{_.map(applicaitons, (app, i) => {
+						return (<TimeAxis key={app.id} appId={app.id} performances={performances} app={app} xAxisData={xAxisData} />);
+					})}
 				</div>
-
 			</div>
 		)
 	}
 }
 
 TimeAxis.contextTypes = {
-	router: PropTypes.object.isRequired
+	router: PropTypes.object.isRequired,
+	xAxisData: PropTypes.array,
+	app: PropTypes.array,
+	performances: PropTypes.object,
 }
 
 
 Center.propType = {
-	data: React.PropTypes.arrayOf(React.PropTypes.number)
+	router: PropTypes.object.isRequired,
+	xAxisData: PropTypes.array,
+	applicaitons: PropTypes.array,
+	performances: PropTypes.object,
 }
 
 function mapStateToProps(state) {
-
 	return {...state.center }
 }
 export default connect(mapStateToProps)(Center);

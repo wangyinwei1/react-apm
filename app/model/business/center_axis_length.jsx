@@ -37,7 +37,6 @@ class CalculateAxis {
         }
 
         (start % interval == 0) && arr.unshift(this.minuteToTime(start));
-
         return arr;
     }
     //转化为分钟数
@@ -54,7 +53,7 @@ class CalculateAxis {
         var remainder = minute % 60;
         return this.fillZero((minute - remainder) / 60 % 24) + ':' + this.fillZero(remainder);
     }
-    
+    //补零
     fillZero (num) {
         return num < 10 ? ('0' + num) : num;
     }

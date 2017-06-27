@@ -3,6 +3,7 @@ import 'fetch-polyfill';
 import 'es6-promise';
 import 'isomorphic-fetch';
 import processResponse from './process-response';
+import { baseUrl } from '../config/urls.js';
 
 /**
  * 配置回调函数
@@ -59,7 +60,7 @@ function send(url, method, data) {
 
 
   return new Promise((resolve, reject) => {
-    fetch(url, fetchParams)
+    fetch(baseUrl + url, fetchParams)
       .then(processResponse)
       .then(res => {
         CallbacksSetting.onResponse(res)

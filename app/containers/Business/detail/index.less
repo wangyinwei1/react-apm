@@ -7,3 +7,39 @@
     width: calc(~'100% - 240px');
 	float:left;
 }
+.detail_title {
+	width:110px;
+	overflow: hidden; 
+    white-space: nowrap; 
+    text-overflow: ellipsis;
+	float:left;
+	line-height:32px;
+	padding-right: 6px;
+	text-align: center;
+}
+.app_select_container {
+	padding-top:12px;
+	float:right;
+}
+.detail_wrapper {
+	background: rgba(0,0,0,.15);
+	padding: 25px 10px 20px;
+}
+:global {
+	/*ant样式覆盖*/
+	.breadcrumn_wrapper {
+		line-height:52px;
+		a {
+			color:#6ab7fe;
+			font-size: 14px;
+			line-height: 20px;
+		}
+		span {
+			color:#fff;
+			font-size: 14px;
+			line-height: 20px;
+		}
+	}
+}
+
+
